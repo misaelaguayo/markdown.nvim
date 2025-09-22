@@ -1,7 +1,7 @@
 use headless_chrome::protocol::cdp::Page::CaptureScreenshotFormatOption;
 use headless_chrome::Browser;
-use std::fs;
 use pandoc::{InputKind, OutputFormat, OutputKind, PandocOption};
+use std::fs;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -24,7 +24,10 @@ fn main() {
     let output_file = "output.html";
 
     match markdown_to_html(&markdown, output_file) {
-        Ok(_) => println!("Successfully converted markdown to HTML and saved to {}", output_file),
+        Ok(_) => println!(
+            "Successfully converted markdown to HTML and saved to {}",
+            output_file
+        ),
         Err(e) => {
             eprintln!("Error converting markdown to HTML: {}", e);
             std::process::exit(1);
@@ -32,7 +35,10 @@ fn main() {
     }
 
     match html_to_png(output_file, output_image_file) {
-        Ok(_) => println!("Successfully converted HTML to PNG and saved to {}", output_image_file),
+        Ok(_) => println!(
+            "Successfully converted HTML to PNG and saved to {}",
+            output_image_file
+        ),
         Err(e) => {
             eprintln!("Error converting HTML to PNG: {}", e);
             std::process::exit(1);
@@ -63,7 +69,10 @@ fn html_to_png(html_file: &str, output_file: &str) -> Result<(), Box<dyn std::er
     let browser = Browser::default()?;
     let tab = browser.new_tab()?;
 
-    tab.navigate_to(&format!("file://{}", fs::canonicalize(html_file)?.to_str().unwrap()))?;
+    tab.navigate_to(&format!(
+        "file://{}",
+        fs::canonicalize(html_file)?.to_str().unwrap()
+    ))?;
 
     let png_data = tab.capture_screenshot(CaptureScreenshotFormatOption::Png, None, None, true)?;
     fs::write(output_file, &png_data)?;

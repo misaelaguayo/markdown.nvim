@@ -18,7 +18,7 @@ local function display_image(path)
     end, 5000)
 end
 
-local converter_bin = "./target/release/converter"
+local converter_bin = vim.fn.stdpath('data') .. '/lazy/markdown.nvim/target/release/converter'
 local exit_code = 0
 
 function M.setup(opts)
