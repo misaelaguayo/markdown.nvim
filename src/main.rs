@@ -1,6 +1,6 @@
 use headless_chrome::Browser;
 use headless_chrome::LaunchOptionsBuilder;
-use headless_chrome::{protocol::cdp::Page::CaptureScreenshotFormatOption, LaunchOptions};
+use headless_chrome::protocol::cdp::Page::CaptureScreenshotFormatOption;
 use pandoc::{InputKind, OutputFormat, OutputKind, PandocOption};
 use std::fs;
 

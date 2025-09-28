@@ -4,25 +4,29 @@ local api = require("image")
 local Job = require("plenary.job")
 
 local function display_image(path)
-    vim.cmd('rightbelow vsplit')
+    vim.cmd('rightbelow vnew')
+
     local win = vim.api.nvim_get_current_win()
-    local buf = vim.api.nvim_get_current_buf()
+    local buf = vim.api.nvim_create_buf(false, true)
+
+    vim.api.nvim_buf_set_option(buf, "readonly", true)
+    vim.api.nvim_buf_set_option(buf, "modifiable", false)
+    vim.api.nvim_win_set_buf(win, buf)
+
     local image = api.from_file(path, {
         window = win,
         buf = buf,
     })
-    image:render()
 
-    vim.defer_fn(function()
-        image:clear()
-    end, 5000)
+    image:render()
 end
 
-local converter_bin = vim.fn.stdpath('data') .. '/lazy/markdown.nvim/target/release/converter'
 local exit_code = 0
 
 function M.setup(opts)
     opts = opts or {}
+
+    local converter_bin = opts.converter_bin or vim.fn.stdpath('data') .. '/lazy/markdown.nvim/target/release/converter'
 
     vim.keymap.set("n", '<leader>H', function()
         local source = "output.png"

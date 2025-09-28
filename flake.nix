@@ -17,9 +17,7 @@
             pandoc
             cargo
             rustc
-            texliveSmall
             imagemagick
-            python3
           ];
         };
       });
