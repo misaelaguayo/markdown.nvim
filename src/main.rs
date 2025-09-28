@@ -1,5 +1,6 @@
-use headless_chrome::protocol::cdp::Page::CaptureScreenshotFormatOption;
 use headless_chrome::Browser;
+use headless_chrome::LaunchOptionsBuilder;
+use headless_chrome::{protocol::cdp::Page::CaptureScreenshotFormatOption, LaunchOptions};
 use pandoc::{InputKind, OutputFormat, OutputKind, PandocOption};
 use std::fs;
 
@@ -66,7 +67,13 @@ fn markdown_to_html(markdown: &str, output_file: &str) -> Result<(), Box<dyn std
 }
 
 fn html_to_png(html_file: &str, output_file: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let browser = Browser::default()?;
+    let launch_options = LaunchOptionsBuilder::default()
+        .headless(true)
+        .window_size(Some((1080, 5000)))
+        .build()
+        .unwrap();
+
+    let browser = Browser::new(launch_options)?;
     let tab = browser.new_tab()?;
 
     tab.navigate_to(&format!(
@@ -74,7 +81,19 @@ fn html_to_png(html_file: &str, output_file: &str) -> Result<(), Box<dyn std::er
         fs::canonicalize(html_file)?.to_str().unwrap()
     ))?;
 
-    let png_data = tab.capture_screenshot(CaptureScreenshotFormatOption::Png, None, None, true)?;
+    tab.wait_until_navigated()?;
+
+    // trim the page to the content height
+    let body = tab.find_element("body")?;
+    let box_model = body.get_box_model()?;
+    let viewport = box_model.margin_viewport();
+
+    let png_data = tab.capture_screenshot(
+        CaptureScreenshotFormatOption::Png,
+        None,
+        Some(viewport),
+        true,
+    )?;
     fs::write(output_file, &png_data)?;
     println!("Saved PNG to {}", output_file);
 
