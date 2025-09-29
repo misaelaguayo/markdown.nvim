@@ -1,6 +1,9 @@
 local M = {}
 
-local api = require("image")
+local api = require("image", {
+    backend = "kitty",
+    kitty_method = "unicode-placeholders",
+})
 local Job = require("plenary.job")
 
 local function display_image(path)
@@ -16,6 +19,10 @@ local function display_image(path)
     local image = api.from_file(path, {
         window = win,
         buf = buf,
+        with_virtual_padding = false,
+        max_width_window_percentage = 100,
+        max_height_window_percentage = 100,
+        inline = false,
     })
 
     image:render()
