@@ -1,9 +1,6 @@
 local M = {}
 
-local api = require("image", {
-    backend = "kitty",
-    kitty_method = "unicode-placeholders",
-})
+local api = require("image")
 local Job = require("plenary.job")
 
 local function display_image(path)
